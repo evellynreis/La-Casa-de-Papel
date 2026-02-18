@@ -16,7 +16,7 @@ def preparar_ambiente():
             print(f"✅ Criado: {init_file}")
 
     try:
-        import aima
+        import aima3
         print("✅ Biblioteca AIMA detectada.")
     except ImportError:
         print("❌ AIMA não encontrada. Execute: pip install aima-python")
