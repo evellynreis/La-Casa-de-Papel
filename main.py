@@ -6,9 +6,13 @@ if not hasattr(collections, 'Callable'):
     collections.Callable = collections.abc.Callable
 
 import time
+
 from ambiente.banco_ambiente import BancoAmbiente
-from ambiente.agente_seguranca import SegurancaAgente
+from ambiente.agente_seguranca import PoliciaAgente
 from agentes.ladrao_agente import LadraoAgente
+from agentes.programa_ladrao import ProgramaProfessor
+from agentes.programa_humano import ProgramaHumano
+
 
 def criar_casa_da_moeda():
     grid = [
@@ -23,50 +27,86 @@ def criar_casa_da_moeda():
     ]
     return grid
 
-def criar_trajetoria_arturito():
+
+def criar_trajetoria_policia():
     trajetoria = {}
-    for t in range(100): # Aumentado para cobrir mais passos
-        if (t // 15) % 2 == 0: # Vai e volta a cada 15 passos
+
+    for t in range(100):
+        if (t // 15) % 2 == 0:
             x = min(2 + (t % 15), 6)
         else:
             x = max(6 - (t % 15), 2)
+
         trajetoria[t] = (x, 2)
+
     return trajetoria
+
 
 def main():
     print("=" * 60)
     print("🏦 LA CASA DE PAPEL - O ROUBO À CASA DA MOEDA")
     print("=" * 60)
-    
+
+    print("\nEscolha o modo de jogo:")
+    print("1 - 🤖 IA (A* automático)")
+    print("2 - 🎮 Jogar manualmente")
+
+    modo = input("\nDigite sua opção: ").strip()
+
     grid = criar_casa_da_moeda()
-    trajetoria = criar_trajetoria_arturito()
-    
+    trajetoria = criar_trajetoria_policia()
+
     ambiente = BancoAmbiente(grid, trajetoria)
-    
-    # IMPORTANTE: Passar a trajetória para o segurança
-    ladrao = LadraoAgente(posicao_inicial=(0, 0), grid=grid, trajetoria_seguranca=trajetoria)
-    seguranca = SegurancaAgente(posicao_inicial=(2, 2), trajetoria=trajetoria)
-    
+
+    # Escolha do programa do ladrão
+    if modo == '1':
+        print("\n🤖 Modo IA ativado!")
+        programa = ProgramaProfessor(grid, trajetoria)
+    else:
+        print("\n🎮 Modo Manual ativado!")
+        programa = ProgramaHumano()
+
+    ladrao = LadraoAgente(
+        posicao_inicial=(0, 0),
+        programa=programa
+    )
+
+    policia = PoliciaAgente(
+        posicao_inicial=(2, 2),
+        trajetoria=trajetoria
+    )
+
     ambiente.add_thing(ladrao)
-    ambiente.add_thing(seguranca)
-    
+    ambiente.add_thing(policia)
+
     passo = 0
+
     while ambiente.jogo_ativo and passo < 60:
-        ambiente.step() # O step já chama o render que corrigimos antes
-        
+
+        ambiente.step()
+
         pos_ladrao = ambiente.get_posicao_agente('LadraoAgente')
-        pos_seg = ambiente.get_posicao_agente('SegurancaAgente')
-        
-        if pos_ladrao == pos_seg:
-            print("\n🚨 PERIGO! O PROFESSOR FOI PEGO POR ARTURITO!")
+        pos_policia = ambiente.get_posicao_agente('PoliciaAgente')
+
+        # Se colidiu com o segurança
+        if pos_ladrao == pos_policia:
+            print("\n🚨 PERIGO! O PROFESSOR FOI PEGO PELA POLÍCIA!")
             break
-            
+
+        # Se voltou para saída com a joia
         if pos_ladrao == (0, 0) and ambiente.ladrao_joia and passo > 1:
             print("\n🏆 SUCESSO! O PROFESSOR ESCAPOU COM A JOIA!")
             break
-            
+
         passo += 1
-        time.sleep(0.4)
+
+        # Sleep apenas no modo IA
+        if modo == '1':
+            time.sleep(0.4)
+
+    print("\n🏁 FIM DE JOGO")
+    print("=" * 60)
+
 
 if __name__ == "__main__":
     main()

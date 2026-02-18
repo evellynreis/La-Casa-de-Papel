@@ -42,7 +42,7 @@ class BancoAmbiente(Environment):
         if is_ladrao:
             percepcao.update({
                 'tem_joia': self.ladrao_joia,
-                'pos_seguranca': self.get_posicao_agente('SegurancaAgente'),
+                'pos_seguranca': self.get_posicao_agente('PoliciaAgente'),
                 'grid_vizinhanca': self.get_vizinhanca(agent.posicao, 3)
             })
         else:
@@ -70,30 +70,39 @@ class BancoAmbiente(Environment):
         if acao == 'pegar_joia' and self.grid[y][x] == 2:
             self.ladrao_joia = True
             self.grid[y][x] = 0
-            print("🔑 LADRÃO PEGOU A JOIA!")
+
+            print("\n💎 PROFESSOR PEGOU A JOIA!")
+            print("=" * 40)
+
             
         elif acao in ['cima', 'baixo', 'esquerda', 'direita']:
             novo_x, novo_y = self.calcular_nova_posicao((x, y), acao)
             
             if 0 <= novo_x < len(self.grid[0]) and 0 <= novo_y < len(self.grid):
                 if self.grid[novo_y][novo_x] != 1:
-                    if (novo_x, novo_y) != self.get_posicao_agente('SegurancaAgente'):
+                    if (novo_x, novo_y) != self.get_posicao_agente('PoliciaAgente'):
                         # Limpa posição anterior no grid visual
                         self.grid[y][x] = self.grid_original[y][x] if self.grid_original[y][x] != 2 else 0
                         agente.posicao = (novo_x, novo_y)
                         self.grid[novo_y][novo_x] = 3
                     
     def executar_acao_seguranca(self, agente, nova_pos):
+
+        # Se por algum motivo não for tupla válida, ignora
+        if not isinstance(nova_pos, tuple) or len(nova_pos) != 2:
+            return
+
         x_ant, y_ant = agente.posicao
         agente.posicao = nova_pos
-        
+
         if self.grid[y_ant][x_ant] == 4:
             self.grid[y_ant][x_ant] = self.grid_original[y_ant][x_ant]
-        
+
         nx, ny = nova_pos
+
         if 0 <= nx < len(self.grid[0]) and 0 <= ny < len(self.grid):
             self.grid[ny][nx] = 4
-    
+
     def step(self):
         if self.jogo_ativo:
             super().step()
@@ -116,7 +125,7 @@ class BancoAmbiente(Environment):
                 pos = (x, y)
                 if pos == self.get_posicao_agente('LadraoAgente'):
                     display += "🧑 "
-                elif pos == self.get_posicao_agente('SegurancaAgente'):
+                elif pos == self.get_posicao_agente('PoliciaAgente'):
                     display += "👮 "
                 elif valor == 1: display += "🧱 "
                 elif valor == 2: display += "💎 "

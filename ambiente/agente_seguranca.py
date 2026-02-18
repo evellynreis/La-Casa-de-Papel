@@ -1,7 +1,8 @@
 from aima3.agents import Agent
 
-class SegurancaAgente(Agent):
-    """Agente segurança (Arturito) - segue trajetória previsível"""
+class PoliciaAgente(Agent):
+
+    """Agente polícia - segue trajetória previsível"""
     
     def __init__(self, posicao_inicial, trajetoria):
         # O programa do agente apenas retorna a posição que ele deve estar
@@ -11,7 +12,7 @@ class SegurancaAgente(Agent):
         
     def programa_seguranca(self, percepcao):
         """
-        O segurança não 'decide', ele segue o plano.
+        A polícia não 'decide', ele segue o plano.
         Retorna a próxima posição baseada no tempo atual.
         """
         tempo_atual = percepcao.get('tempo', 0)

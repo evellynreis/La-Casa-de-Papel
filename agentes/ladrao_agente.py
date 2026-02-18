@@ -7,13 +7,9 @@ class LadraoAgente(Agent):
     O Agent do AIMA espera receber uma função 'program' no init.
     """
     
-    def __init__(self, posicao_inicial, grid, trajetoria_seguranca):
-        # Primeiro, instanciamos a lógica do programa
-        self.programa_ladrao = ProgramaProfessor(grid, trajetoria_seguranca)
-        
-        # Passamos o método decidir_acao como o 'program' do Agente
-        super().__init__(self.programa_ladrao.decidir_acao)
-        
-        # Atributos auxiliares de estado
+class LadraoAgente(Agent):
+
+    def __init__(self, posicao_inicial, programa):
+        super().__init__(programa.decidir_acao)
         self.posicao = posicao_inicial
         self.performance = 0
