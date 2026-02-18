@@ -1,16 +1,19 @@
-from aima.agents import Agent
+from aima3.agents import Agent
 
 class SegurancaAgente(Agent):
     """Agente segurança (Arturito) - segue trajetória previsível"""
     
-    def __init__(self, posicao_inicial):
+    def __init__(self, posicao_inicial, trajetoria):
+        # O programa do agente apenas retorna a posição que ele deve estar
         super().__init__(self.programa_seguranca)
         self.posicao = posicao_inicial
-        self.trajetoria_idx = 0
+        self.trajetoria = trajetoria # Dicionário {tempo: (x, y)}
         
     def programa_seguranca(self, percepcao):
         """
-        Programa do segurança: segue padrão previsível
-        O movimento é controlado pelo ambiente
+        O segurança não 'decide', ele segue o plano.
+        Retorna a próxima posição baseada no tempo atual.
         """
-        return None
+        tempo_atual = percepcao.get('tempo', 0)
+        proxima_pos = self.trajetoria.get(tempo_atual, self.posicao)
+        return proxima_pos

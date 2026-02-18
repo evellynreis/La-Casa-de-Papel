@@ -1,60 +1,70 @@
-from aima.agents import Environment, Agent
-import time
+from aima3.agents import Environment
 import os
 
 class BancoAmbiente(Environment):
     """
     Ambiente da Casa da Moeda (grid)
-    0 = corredor livre
-    1 = parede
-    2 = joia
-    3 = ladrão
-    4 = segurança
-    5 = entrada/saída
     """
     
     def __init__(self, grid, trajetoria_seguranca):
         super().__init__()
         self.grid = [linha[:] for linha in grid]
-        self.grid_original = grid
+        self.grid_original = [linha[:] for linha in grid]
         self.trajetoria_seguranca = trajetoria_seguranca
         self.passo_atual = 0
         self.ladrao_joia = False
         self.jogo_ativo = True
-        self.agents = []
+
+    def add_thing(self, thing, location=None):
+        """
+        Sobrescreve o método padrão para registrar agentes e atualizar o grid.
+        """
+        # No AIMA3, agentes são armazenados na lista self.agents
+        # e outras coisas na lista self.things
+        super().add_thing(thing, location)
         
+        # Sincroniza a posição inicial do agente no grid visual
+        if hasattr(thing, 'posicao'):
+            x, y = thing.posicao
+            # 3 para Ladrão, 4 para Segurança (conforme sua lógica de render)
+            tipo = 3 if hasattr(thing, 'programa_ladrao') else 4
+            self.grid[y][x] = tipo
+
     def percept(self, agent):
         """Retorna a percepção para um agente"""
-        from agentes.ladrao_agente import LadraoAgente
-        from ambiente.agente_seguranca import SegurancaAgente
+        is_ladrao = hasattr(agent, 'programa_ladrao')
         
-        if isinstance(agent, LadraoAgente):
-            return {
-                'posicao': agent.posicao,
+        percepcao = {
+            'posicao': agent.posicao,
+            'tempo': self.passo_atual,
+        }
+        
+        if is_ladrao:
+            percepcao.update({
                 'tem_joia': self.ladrao_joia,
-                'tempo': self.passo_atual,
-                'pos_seguranca': self.get_posicao_seguranca(),
+                'pos_seguranca': self.get_posicao_agente('SegurancaAgente'),
                 'grid_vizinhanca': self.get_vizinhanca(agent.posicao, 3)
-            }
-        elif isinstance(agent, SegurancaAgente):
-            return {
-                'posicao': agent.posicao,
-                'tempo': self.passo_atual,
-                'pos_ladrao': self.get_posicao_ladrao()
-            }
-        return {}
+            })
+        else:
+            percepcao.update({
+                'pos_ladrao': self.get_posicao_agente('LadraoAgente')
+            })
+            
+        return percepcao
     
     def execute_action(self, agent, action):
-        """Executa a ação de um agente no ambiente"""
-        from agentes.ladrao_agente import LadraoAgente
+        """Executa a ação baseada no tipo de agente"""
+        if action == 'NoOp' or action is None:
+            return
+
+        is_ladrao = hasattr(agent, 'programa_ladrao')
         
-        if isinstance(agent, LadraoAgente):
+        if is_ladrao:
             self.executar_acao_ladrao(agent, action)
         else:
             self.executar_acao_seguranca(agent, action)
     
     def executar_acao_ladrao(self, agente, acao):
-        """Executa ação do ladrão"""
         x, y = agente.posicao
         
         if acao == 'pegar_joia' and self.grid[y][x] == 2:
@@ -67,111 +77,62 @@ class BancoAmbiente(Environment):
             
             if 0 <= novo_x < len(self.grid[0]) and 0 <= novo_y < len(self.grid):
                 if self.grid[novo_y][novo_x] != 1:
-                    pos_seg = self.get_posicao_seguranca()
-                    if (novo_x, novo_y) != pos_seg:
-                        self.grid[y][x] = self.grid_original[y][x]
+                    if (novo_x, novo_y) != self.get_posicao_agente('SegurancaAgente'):
+                        # Limpa posição anterior no grid visual
+                        self.grid[y][x] = self.grid_original[y][x] if self.grid_original[y][x] != 2 else 0
                         agente.posicao = (novo_x, novo_y)
                         self.grid[novo_y][novo_x] = 3
                     
-    def executar_acao_seguranca(self, agente, acao):
-        """Segue trajetória predefinida"""
-        if self.passo_atual < len(self.trajetoria_seguranca):
-            x_ant, y_ant = agente.posicao
-            nova_pos = self.trajetoria_seguranca.get(self.passo_atual, agente.posicao)
-            
+    def executar_acao_seguranca(self, agente, nova_pos):
+        x_ant, y_ant = agente.posicao
+        agente.posicao = nova_pos
+        
+        if self.grid[y_ant][x_ant] == 4:
             self.grid[y_ant][x_ant] = self.grid_original[y_ant][x_ant]
-            agente.posicao = nova_pos
-            x, y = nova_pos
-            if 0 <= x < len(self.grid[0]) and 0 <= y < len(self.grid):
-                self.grid[y][x] = 4
-    
-    def render(self):
-        """Renderiza o estado atual do ambiente"""
-        os.system('cls' if os.name == 'nt' else 'clear')
         
-        print("=" * 50)
-        print(f"🏦 CASA DA MOEDA DA ESPANHA - PASSO {self.passo_atual}")
-        print("=" * 50)
-        
-        # Legenda
-        print("🧑 Professor (Ladrão) | 👮 Arturito (Segurança) | 💎 Joia | 🚪 Entrada")
-        print()
-        
-        for y in range(len(self.grid)):
-            linha = ""
-            for x in range(len(self.grid[0])):
-                if (x, y) == self.get_posicao_ladrao():
-                    linha += "🧑 "
-                elif (x, y) == self.get_posicao_seguranca():
-                    linha += "👮 "
-                elif (x, y) == (0, 0):
-                    linha += "🚪 "
-                elif self.grid[y][x] == 2:
-                    linha += "💎 "
-                elif self.grid[y][x] == 1:
-                    linha += "🧱 "
-                else:
-                    linha += "⬜ "
-            print(linha)
-        
-        print()
-        print(f"Joia com ladrão: {'SIM ✅' if self.ladrao_joia else 'NÃO ❌'}")
-        print(f"Status: {'JOGO ATIVO' if self.jogo_ativo else 'FIM DE JOGO'}")
-        print("=" * 50)
+        nx, ny = nova_pos
+        if 0 <= nx < len(self.grid[0]) and 0 <= ny < len(self.grid):
+            self.grid[ny][nx] = 4
     
     def step(self):
-        """Executa um passo no ambiente"""
         if self.jogo_ativo:
-            for agent in self.agents[:]:
-                percept = self.percept(agent)
-                action = agent.program(percept)
-                if action:
-                    self.execute_action(agent, action)
+            super().step()
             self.passo_atual += 1
-    
-    def add_agent(self, agent):
-        """Adiciona um agente ao ambiente"""
-        self.agents.append(agent)
-    
-    def get_posicao_seguranca(self):
-        """Retorna posição atual do segurança"""
-        from ambiente.agente_seguranca import SegurancaAgente
+            self.render()
+
+    def get_posicao_agente(self, tipo_nome):
         for agent in self.agents:
-            if isinstance(agent, SegurancaAgente):
+            if type(agent).__name__ == tipo_nome:
                 return agent.posicao
-        return (0, 0)
-    
-    def get_posicao_ladrao(self):
-        """Retorna posição atual do ladrão"""
-        from agentes.ladrao_agente import LadraoAgente
-        for agent in self.agents:
-            if isinstance(agent, LadraoAgente):
-                return agent.posicao
-        return (0, 0)
-    
+        return (-1, -1)
+
+    def render(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(f"🏦 PASSO: {self.passo_atual} | Joia: {'✅' if self.ladrao_joia else '❌'}")
+        
+        for y, linha_grid in enumerate(self.grid):
+            display = ""
+            for x, valor in enumerate(linha_grid):
+                pos = (x, y)
+                if pos == self.get_posicao_agente('LadraoAgente'):
+                    display += "🧑 "
+                elif pos == self.get_posicao_agente('SegurancaAgente'):
+                    display += "👮 "
+                elif valor == 1: display += "🧱 "
+                elif valor == 2: display += "💎 "
+                elif valor == 5: display += "🚪 "
+                else: display += "⬜ "
+            print(display)
+        print("=" * 30)
+
     def get_vizinhanca(self, pos, raio):
-        """Retorna a vizinhança ao redor de uma posição"""
         x, y = pos
-        vizinhanca = []
-        for dy in range(-raio, raio+1):
-            linha = []
-            for dx in range(-raio, raio+1):
-                nx, ny = x+dx, y+dy
-                if 0 <= nx < len(self.grid[0]) and 0 <= ny < len(self.grid):
-                    linha.append(self.grid[ny][nx])
-                else:
-                    linha.append(1)
-            vizinhanca.append(linha)
-        return vizinhanca
-    
+        return [[self.grid[ny][nx] if (0<=nx<len(self.grid[0]) and 0<=ny<len(self.grid)) else 1 
+                for nx in range(x-raio, x+raio+1)] 
+                for ny in range(y-raio, y+raio+1)]
+
     def calcular_nova_posicao(self, pos, acao):
         x, y = pos
-        if acao == 'cima':
-            return (x, y-1)
-        elif acao == 'baixo':
-            return (x, y+1)
-        elif acao == 'esquerda':
-            return (x-1, y)
-        elif acao == 'direita':
-            return (x+1, y)
-        return pos
+        movimentos = {'cima': (0, -1), 'baixo': (0, 1), 'esquerda': (-1, 0), 'direita': (1, 0)}
+        dx, dy = movimentos.get(acao, (0, 0))
+        return (x + dx, y + dy)
