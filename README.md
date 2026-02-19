@@ -4,6 +4,36 @@ Um simulador interativo em Python inspirado na série *La Casa de Papel*. Neste 
 
 Este projeto é também uma aplicação prática de **Inteligência Artificial**, utilizando a biblioteca AIMA (*Artificial Intelligence: A Modern Approach*) para demonstrar o funcionamento de algoritmos de busca em espaços de estados dinâmicos.
 
+---
+
+## 🎯 Objetivo do Projeto
+
+Demonstrar na prática:
+
+- ✔️ Modelagem de problema de busca
+- ✔️ Implementação de agentes inteligentes
+- ✔️ Algoritmo A* (A-Star)
+- ✔️ Heurística admissível (Manhattan)
+- ✔️ Ambiente baseado na arquitetura da AIMA
+- ✔️ Testes automatizados com `pytest`
+
+---
+
+## 🧠 Conceitos de IA Utilizados
+
+### 🔎 Busca A*
+Utiliza `astar_search` da biblioteca AIMA.
+
+### 📏 Heurística
+- Distância de Manhattan
+- Heurística com penalidade dinâmica considerando a posição futura da polícia
+
+### 🤖 Agentes
+- **Ladrão (Professor)** → agente inteligente com planejamento
+- **Polícia** → agente reativo com trajetória fixa
+
+---
+
 ## 📖 Inspiração Acadêmica: O Mundo do Wumpus (AIMA)
 
 A arquitetura e a lógica deste projeto foram fortemente inspiradas em um dos problemas mais clássicos da Inteligência Artificial: o **Mundo do Wumpus** (*Wumpus World*), apresentado no renomado livro *Artificial Intelligence: A Modern Approach* (Stuart Russell e Peter Norvig).
@@ -22,7 +52,11 @@ Este simulador é, na prática, uma roupagem moderna para testar a estrutura de 
 O jogo oferece duas formas de jogar:
 
 * **🤖 Modo IA (Busca A* Automática):** O Professor age por conta própria. A IA calcula a rota perfeita usando o algoritmo de busca A* (A-Star), prevendo a rota de patrulha da polícia, pegando a joia e traçando o caminho mais seguro até a saída.
-* **🎮 Modo Manual:** Assuma o controle! Você guia o Professor pelo mapa usando o teclado, precisando desviar da polícia em tempo real.
+* **🎮 Modo Manual:** Assuma o controle! Você guia o Professor pelo mapa usando o teclado, precisando desviar da polícia em tempo real. Você controla o personagem utilizando:
+W = cima
+S = baixo
+A = esquerda
+D = direita
 
 ---
 
