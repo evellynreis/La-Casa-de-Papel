@@ -19,21 +19,6 @@ Demonstrar na prática:
 
 ---
 
-## 🧠 Conceitos de IA Utilizados
-
-### Busca A*
-Utiliza `astar_search` da biblioteca AIMA.
-
-### Heurística
-- Distância de Manhattan
-- Heurística com penalidade dinâmica considerando a posição futura da polícia
-
-### Agentes
-- **Ladrão (Professor)** → agente inteligente com planejamento
-- **Polícia** → agente reativo com trajetória fixa
-
----
-
 ## 📖 Inspiração Acadêmica: O Mundo do Wumpus (AIMA)
 
 A arquitetura e a lógica deste projeto foram fortemente inspiradas em um dos problemas mais clássicos da Inteligência Artificial: o **Mundo do Wumpus** (*Wumpus World*), apresentado no renomado livro *Artificial Intelligence: A Modern Approach* (Stuart Russell e Peter Norvig).
