@@ -39,9 +39,9 @@ O jogo oferece duas formas de jogar:
 * **🤖 Modo IA (Busca A* Automática):** O Professor age por conta própria. A IA calcula a rota perfeita usando o algoritmo de busca A* (A-Star), prevendo a rota de patrulha da polícia, pegando a joia e traçando o caminho mais seguro até a saída.
 * **🎮 Modo Manual:** Assuma o controle! Você guia o Professor pelo mapa usando o teclado, precisando desviar da polícia em tempo real. Você controla o personagem utilizando:
 
-W = cima
-S = baixo
-A = esquerda
+W = cima /
+S = baixo /
+A = esquerda /
 D = direita
 
 ---
