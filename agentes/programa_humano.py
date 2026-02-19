@@ -5,7 +5,7 @@ class ProgramaHumano:
 
     def decidir_acao(self, percepcao):
         print("\n🎮 Controle o Professor:")
-        print("W = cima | S = baixo | A = esquerda | D = direita | P = pegar joia")
+        print("W = cima | S = baixo | A = esquerda | D = direita")
 
         comando = input("Sua ação: ").lower()
 

@@ -80,11 +80,15 @@ class BancoAmbiente(Environment):
             
             if 0 <= novo_x < len(self.grid[0]) and 0 <= novo_y < len(self.grid):
                 if self.grid[novo_y][novo_x] != 1:
-                    if (novo_x, novo_y) != self.get_posicao_agente('PoliciaAgente'):
-                        # Limpa posição anterior no grid visual
-                        self.grid[y][x] = self.grid_original[y][x] if self.grid_original[y][x] != 2 else 0
-                        agente.posicao = (novo_x, novo_y)
-                        self.grid[novo_y][novo_x] = 3
+                    # Se a nova posição contém a joia (valor 2), pega automaticamente
+                    if self.grid[novo_y][novo_x] == 2:
+                        self.ladrao_joia = True
+                        print("\n💎 PROFESSOR PEGOU A JOIA!")
+                    
+                    # Atualiza posição no grid
+                    self.grid[y][x] = self.grid_original[y][x] if self.grid_original[y][x] != 2 else 0
+                    agente.posicao = (novo_x, novo_y)
+                    self.grid[novo_y][novo_x] = 3
                     
     def executar_acao_seguranca(self, agente, nova_pos):
 
