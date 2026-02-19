@@ -21,14 +21,14 @@ Demonstrar na prática:
 
 ## 🧠 Conceitos de IA Utilizados
 
-### 🔎 Busca A*
+### Busca A*
 Utiliza `astar_search` da biblioteca AIMA.
 
-### 📏 Heurística
+### Heurística
 - Distância de Manhattan
 - Heurística com penalidade dinâmica considerando a posição futura da polícia
 
-### 🤖 Agentes
+### Agentes
 - **Ladrão (Professor)** → agente inteligente com planejamento
 - **Polícia** → agente reativo com trajetória fixa
 
