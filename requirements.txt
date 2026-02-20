@@ -1,5 +1,5 @@
 # Biblioteca principal para os algoritmos de Inteligência Artificial (A*)
 aima3
 
-# Biblioteca para rodar os testes automatizados (conforme mencionado no seu setup.py)
+# Biblioteca para rodar os testes automatizados
 pytest

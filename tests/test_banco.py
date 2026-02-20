@@ -3,6 +3,10 @@ from problemas.problema_roubo import ProblemaRoubo
 from problemas.heuristica import heuristica_ladrao, manhattan
 from aima3.search import astar_search
 
+"""
+Testa se a heurística não superestima o custo real
+"""
+
 def test_manhattan():
     assert manhattan((0, 0), (3, 4)) == 7
     assert manhattan((5, 5), (2, 3)) == 5
