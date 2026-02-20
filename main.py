@@ -8,7 +8,7 @@ if not hasattr(collections, 'Callable'):
 import time
 
 from ambiente.banco_ambiente import BancoAmbiente
-from ambiente.agente_seguranca import PoliciaAgente
+from agentes.policia_agente import PoliciaAgente
 from agentes.ladrao_agente import LadraoAgente
 from agentes.programa_ladrao import ProgramaProfessor
 from agentes.programa_humano import ProgramaHumano
