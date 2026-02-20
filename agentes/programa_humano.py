@@ -14,7 +14,6 @@ class ProgramaHumano:
             's': 'baixo',
             'a': 'esquerda',
             'd': 'direita',
-            'p': 'pegar_joia'
         }
 
         return mapa.get(comando, 'NoOp')
