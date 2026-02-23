@@ -26,7 +26,7 @@ class BancoAmbiente(Environment):
         # Sincroniza a posição inicial do agente no grid visual
         if hasattr(thing, 'posicao'):
             x, y = thing.posicao
-            # 3 para Ladrão, 4 para Segurança (conforme sua lógica de render)
+            # 3 para Ladrão, 4 para Segurança.
             tipo = 3 if hasattr(thing, 'programa_ladrao') else 4
             self.grid[y][x] = tipo
 

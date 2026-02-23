@@ -13,7 +13,12 @@ from agentes.ladrao_agente import LadraoAgente
 from agentes.programa_ladrao import ProgramaProfessor
 from agentes.programa_humano import ProgramaHumano
 
-
+"""
+0 - Espaço Livre
+1 - Parede
+2 - Joia
+5 - Porta / Entrada
+"""
 def criar_casa_da_moeda():
     grid = [
         [5, 0, 0, 0, 1, 0, 0, 0],
